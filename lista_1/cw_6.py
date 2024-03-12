@@ -10,7 +10,7 @@ def horner(poly, n, x):
 
 
 def main():
-    # 2x3 - 6x2 + 2x - 1 for x = 3
+    # 2x^3 - 6x^2 + 2^x - 1 for x = 3
     poly = [2, -6, 2, -1]
     x = 3
     n = len(poly)
