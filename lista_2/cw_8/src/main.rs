@@ -1,4 +1,3 @@
-use rand::distributions::{Distribution, Uniform};
 use std::cmp::max;
 
 fn lcs(x: [i32; 5], y: [i32; 5]) -> i32 {
@@ -19,30 +18,43 @@ fn lcs(x: [i32; 5], y: [i32; 5]) -> i32 {
     l[5][5]
 }
 
-fn get_random_sequence() -> [i32; 5] {
+// fn get_random_sequence() -> [i32; 5] {
+//     let mut result = [0; 5];
+//     let mut rng = rand::thread_rng();
+//     let coin = Uniform::from(0..=1);
+//
+//     for i in 0..5 {
+//         let v = coin.sample(&mut rng);
+//         result[i] = v;
+//     }
+//
+//     result
+// }
+
+fn get_sequence_from_number(n: i32) -> [i32; 5] {
     let mut result = [0; 5];
-    let mut rng = rand::thread_rng();
-    let coin = Uniform::from(0..=1);
 
     for i in 0..5 {
-        let v = coin.sample(&mut rng);
-        result[i] = v;
+        result[i] = (n >> i) & 0x1;
     }
 
     result
 }
 
 fn main() {
-    let tries = 100000000;
-
     let mut sum = 0;
+    let mut iter = 0;
 
-    for _ in 0..tries {
-        let x = get_random_sequence();
-        let y = get_random_sequence();
+    for i in 0..32 {
+        for j in 0..32 {
+            let x = get_sequence_from_number(i);
+            let y = get_sequence_from_number(j);
 
-        sum += lcs(x, y)
+            sum += lcs(x, y);
+            iter += 1;
+        }
     }
 
-    println!("E = {}", sum as f64 / tries as f64);
+    println!("Sums = {sum}");
+    println!("E = {}", sum as f64 / iter as f64);
 }
