@@ -55,6 +55,6 @@ fn main() {
         }
     }
 
-    println!("Sums = {sum}");
+    // println!("Sums = {sum}");
     println!("E = {}", sum as f64 / iter as f64);
 }
