@@ -3,6 +3,7 @@ fn lcs(x: &str, y: &str, z: &str) -> String {
     let y_len = y.len();
     let z_len = z.len();
     let mut dp = vec![vec![vec![0; z_len + 1]; y_len + 1]; x_len + 1];
+
     for i in 1..=x_len {
         for j in 1..=y_len {
             for k in 1..=z_len {
@@ -16,10 +17,12 @@ fn lcs(x: &str, y: &str, z: &str) -> String {
             }
         }
     }
+
     let mut i = x_len;
     let mut j = y_len;
     let mut k = z_len;
     let mut result = String::new();
+
     while i > 0 && j > 0 && k > 0 {
         if dp[i][j][k] == dp[i - 1][j][k] {
             i -= 1;
@@ -34,6 +37,7 @@ fn lcs(x: &str, y: &str, z: &str) -> String {
             k -= 1;
         }
     }
+
     result.chars().rev().collect()
 }
 

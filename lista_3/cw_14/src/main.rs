@@ -14,9 +14,12 @@ fn main() {
             (4, 5),
         ],
     };
-    let (a, b) = find_cut(g);
+    let (a, b) = find_cut(g.clone());
     println!("A: {:?}", a);
     println!("B: {:?}", b);
+
+    let cut_size = cut(&a, &b, &g);
+    println!("Cut size: {}", cut_size);
 
     // max cut: {33,{{1,3,5,7,9,11,12,14,16,17,20},{2,4,6,8,10,13,15,18,19}}}
     let g1 = Graph {
