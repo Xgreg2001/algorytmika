@@ -1,6 +1,7 @@
 use plotly::{common::Title, Bar, ImageFormat, Layout, Plot};
 use rand::Rng;
 use std::{
+    collections::HashSet,
     fs::File,
     io::{BufReader, Read},
 };
@@ -21,19 +22,26 @@ fn main() {
     let mut data = String::new();
     reader.read_to_string(&mut data).unwrap();
 
-    let words = data.split_whitespace();
+    let words_vec = data.split_whitespace().collect::<Vec<&str>>();
+    let words_set = data.split_whitespace().collect::<HashSet<&str>>();
 
-    for seed in seeds.iter() {
-        let mut results = vec![0; 21];
+    for seed in seeds {
+        let mut results_vec = vec![0; 21];
+        let mut results_set = vec![0; 21];
 
-        for word in words.clone() {
-            let hash = hash(&mut word.as_bytes(), *seed);
-            results[hash] += 1;
+        for word in words_vec.iter() {
+            let hash = hash(&mut word.as_bytes(), seed);
+            results_vec[hash] += 1;
+        }
+
+        for word in words_set.iter() {
+            let hash = hash(&mut word.as_bytes(), seed);
+            results_set[hash] += 1;
         }
 
         let x = (0..=20).collect::<Vec<_>>();
 
-        let trace = Bar::new(x, results);
+        let trace = Bar::new(x.clone(), results_vec);
 
         let mut plot = Plot::new();
         plot.add_trace(trace);
@@ -43,6 +51,25 @@ fn main() {
         plot.set_layout(layout);
 
         plot.write_image(format!("hist_{seed}"), ImageFormat::PDF, 1280, 900, 1.0);
+
+        let trace = Bar::new(x, results_set);
+
+        let mut plot = Plot::new();
+        plot.add_trace(trace);
+
+        let layout = Layout::new().title(Title::new(&format!(
+            "murmur3 histogram unique words. seed={seed}"
+        )));
+
+        plot.set_layout(layout);
+
+        plot.write_image(
+            format!("hist_unique_{seed}"),
+            ImageFormat::PDF,
+            1280,
+            900,
+            1.0,
+        );
     }
 
     let a = "William";

@@ -2,54 +2,40 @@ use rand::Rng;
 use std::ops::RangeInclusive;
 
 fn main() {
-    let stream = 0..=u32::MAX;
-    let reservoir = vec![0; 10];
-    let moments = generate_moments(100, reservoir.len());
-    reservoir_sample(stream, reservoir, moments);
+    let stream = 0..=u64::MAX;
+    let moments = generate_moments(50);
+    println!("{:?}", moments);
+    reservoir_sample(stream, moments);
 }
 
-fn generate_moments(count: usize, reservoir_size: usize) -> Vec<Moment> {
-    let mut moments = vec![];
-    let mut counter = 0;
-    let mut i = reservoir_size;
+fn generate_moments(length: usize) -> Vec<usize> {
+    let mut moments = vec![0; length];
+    moments[0] = 1;
 
     let mut rng = rand::thread_rng();
 
-    while counter < count {
-        let j = rng.gen_range(0..=i);
-        if j < reservoir_size {
-            moments.push(Moment { i, j });
-            counter += 1;
-        }
-        i += 1;
+    for i in 1..length {
+        let prev = moments[i - 1];
+        let j: f64 = rng.gen();
+        moments[i] = prev + (f64::ceil(j * prev as f64) / (1.0 - j)) as usize
     }
 
     return moments;
 }
 
-struct Moment {
-    i: usize,
-    j: usize,
-}
-
-fn reservoir_sample(stream: RangeInclusive<u32>, mut reservoir: Vec<u32>, moments: Vec<Moment>) {
+fn reservoir_sample(stream: RangeInclusive<u64>, moments: Vec<usize>) {
     let mut iterator = stream.into_iter();
-    let mut i = 0;
-
-    while i < reservoir.len() {
-        reservoir[i] = iterator.next().unwrap();
-        i += 1;
-    }
+    let mut reservoir = iterator.next().unwrap();
+    let mut i = 1;
 
     let mut moment_counter = 0;
     let mut change_counter = 0;
+
     while let Some(new_value) = iterator.next() {
-        if i == moments[moment_counter].i {
-            println!(
-                "{i} {change_counter}: {old_value} -> {new_value} {reservoir:?}",
-                old_value = reservoir[moments[moment_counter].j]
-            );
-            reservoir[moments[moment_counter].j] = new_value;
+        if i == moments[moment_counter] {
+            println!("{i} {change_counter}: {reservoir} -> {new_value}",);
+
+            reservoir = new_value;
             moment_counter += 1;
             change_counter += 1;
 
@@ -57,6 +43,7 @@ fn reservoir_sample(stream: RangeInclusive<u32>, mut reservoir: Vec<u32>, moment
                 break;
             }
         }
+
         i += 1;
     }
 }

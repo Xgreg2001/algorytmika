@@ -121,8 +121,11 @@ fn approximate_counting(n_stations: usize, trials: usize) -> (Vec<f64>, f64, f64
 
     for _ in 0..trials {
         let rng = rand::thread_rng();
-        let bin = Uniform::from(0.0..1.0);
-        let mut zeta_values = rng.sample_iter(&bin).take(n_stations).collect::<Vec<f64>>();
+        let unif = Uniform::from(0.0..1.0);
+        let mut zeta_values = rng
+            .sample_iter(&unif)
+            .take(n_stations)
+            .collect::<Vec<f64>>();
         zeta_values.sort_by(|a, b| a.partial_cmp(b).unwrap());
         if n_stations <= 400 {
             results.push(n_stations as f64);
@@ -132,6 +135,7 @@ fn approximate_counting(n_stations: usize, trials: usize) -> (Vec<f64>, f64, f64
     }
 
     let mean_estimate = results.iter().sum::<f64>() / trials as f64;
+
     let variance = results
         .iter()
         .map(|value| {

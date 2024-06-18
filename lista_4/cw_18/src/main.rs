@@ -3,7 +3,7 @@ use std::ops::RangeInclusive;
 
 fn main() {
     let stream = 0..=u32::MAX;
-    let reservoir = vec![0; 50];
+    let reservoir = vec![0; 1];
     reservoir_sample(stream, reservoir);
 }
 
@@ -28,5 +28,9 @@ fn reservoir_sample(stream: RangeInclusive<u32>, mut reservoir: Vec<u32>) {
             change_counter += 1;
         }
         i += 1;
+
+        if change_counter >= 50 {
+            break;
+        }
     }
 }
